@@ -22,8 +22,8 @@
                 <th>Actions</th>
             </tr>
         </thead>
-        <tbody>
-		<tr id="insertAttr"></tr>
+        <tbody id="tblBody">
+		{#<tr id="insertAttr"></tr>
         {% for post in posts %}
             <tr>
                 <td>{{ post.user }}</td>
@@ -40,23 +40,54 @@
                 </td>
             </tr>
         {% endfor %}
+		#}
         </tbody>
     </table>
-	{{ knp_pagination_render(posts) }}
+
 {% endblock %}
 {% block javascripts %}
     <script type="text/javascript">
 	function getpost(){
-	
-				console.log("GETPOST");
-					var obj = "";
+				//console.log("GETPOST");
+					var obj;
 					ajaxRequest = $.ajax({
 						type: 'GET',
 						url: '{{ path('admin_posts_data') }}',
 						data: obj,
 						datatype: 'json',
 						success: function (json) {
-							console.log(json);		
+							//console.log('{{ app.user}}');
+							{% if is_granted('ROLE_ADMIN') or is_granted('ROLE_USER') %}
+
+								var iduser = '{{app.user.id}}';
+								var path =  'posts/del/';
+								json = JSON.parse(json);
+										var tr;										
+										$("#tblBody").empty();
+										for (var i = 0; i < json.length; i++) {
+											tr = $('<tr/>');
+											tr.append("<td>" + json[i].username + "</td>");
+											tr.append("<td>" + json[i].content + "</td>");
+											tr.append("<td>" + json[i].created_at + "</td>");
+											if(iduser != json[i].user_id ) tr.append("<td></td>");
+											else tr.append("<td><ul><li><a href=" + path + json[i].id + ">Delete</a></li></ul></td>");
+											$('table').append(tr);
+										}
+							
+							{% else %}
+									json = JSON.parse(json);
+											var tr;										
+											$("#tblBody").empty();
+											for (var i = 0; i < json.length; i++) {
+											tr = $('<tr/>');
+											tr.append("<td>" + json[i].username + "</td>");
+											tr.append("<td>" + json[i].content + "</td>");
+											tr.append("<td>" + json[i].created_at + "</td>");
+											tr.append("<td><ul><li><a href=/login>Log in</a></li></ul></td>");
+											$('table').append(tr);
+											}							
+							{% endif %}		
+								
 						}
 				});
 	
@@ -64,7 +95,7 @@
 	
 	$(document).ready(function() {
 		 console.log("Ready");
-						
+			getpost();					
 			$('form').submit(function(event) { 
 				$('#name + .throw_error').empty(); 
 				$('#success').empty();
@@ -81,7 +112,6 @@
 					obj[data[key].split("=")[0]] = data[key].split("=")[1];
 				}
 
-				//console.log(obj);
 							
 				var $inputs = $form.find("input, select, button, textarea");
 				$inputs.prop("disabled", true); 
@@ -95,9 +125,11 @@
 						success: function (json) {
 							//console.log(json);
 							if(json != 401) {
-								var delpath ="<ul><li><a href="+json['delpath']+">Delete</a></li></ul>";
-								var newRowContent = "<tr><td>"+json['user']+"</td><td>"+json['content']+"</td><td>"+json['created_at']+"</td><td>"+delpath+"</td></tr>";
-								$("#insertAttr").after(newRowContent);
+							
+							//	var delpath ="<ul><li><a href="+json['delpath']+">Delete</a></li></ul>";
+							//	var newRowContent = "<tr><td>"+json['user']+"</td><td>"+json['content']+"</td><td>"+json['created_at']+"</td><td>"+delpath+"</td></tr>";
+							//	$("#insertAttr").after(newRowContent);
+								getpost();
 							} 
 											
 						}
@@ -118,8 +150,9 @@
 				
 				event.preventDefault(); //Prevent the default submit
 			});
+
 			
-			//setTimeout('getpost()',4000);
+			setInterval('getpost()',4000);
 		});
     </script>	
 {% endblock %}

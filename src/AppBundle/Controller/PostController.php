@@ -86,7 +86,7 @@ class PostController extends Controller
     {
 		$em = $this->getDoctrine()->getManager();
 					
-		$sql = "SELECT  user.username,  post.content,  post.created_at FROM post INNER JOIN user ON post.user_id = user.id";
+		$sql = "SELECT  user.username,  post.content,  post.created_at, post.id, post.user_id FROM post INNER JOIN user ON post.user_id = user.id ORDER BY post.created_at DESC";
 		$stmt = $em->getConnection()->prepare($sql);
 		$stmt->execute();	
 		$data = $stmt->fetchAll();

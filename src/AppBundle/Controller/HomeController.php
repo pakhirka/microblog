@@ -25,8 +25,9 @@ class HomeController extends Controller
     {   
 	   $posts = $this->getDoctrine()->getRepository('AppBundle:Post')->findBy([], ['createdAt' => 'DESC']);
 
-        $paginator = $this->get('knp_paginator');
-        $posts = $paginator->paginate($posts, $request->query->getInt('page', 1), 10);
+      //  $paginator = $this->get('knp_paginator');
+       // $posts = $paginator->paginate($posts, $request->query->getInt('page', 1), 0);
+
 		
 		$post = new Post();
         $form = $this->createForm(PostType::class, $post);
