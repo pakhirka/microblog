@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+  <h1>Post edit</h1>
+
+  {{ form_start(edit_form) }}
+  {{ form_widget(edit_form) }}
+  <button class="btn btn-primary" type="submit">{{ 'form.edit' | trans }}</button>
+  {{ form_end(edit_form) }}
+
+  <ul>
+    <li>
+      <a href="{{ path('admin_posts_index') }}">Back to the list</a>
+    </li>
+    <li>
+      {{ form_start(delete_form) }}
+      <button class="btn btn-default" type="submit">{{ 'form.delete' | trans }}</button>
+      {{ form_end(delete_form) }}
+    </li>
+  </ul>
+{% endblock %}

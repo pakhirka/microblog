@@ -1,0 +1,12 @@
+form:
+  username: Username
+  email: Email address
+  submit: Submit
+  content: Content
+  user: User
+  category: Category
+  password: Password
+  repeat_password: Repeat Password
+  edit: Edit
+  delete: Delete
+  create: Create

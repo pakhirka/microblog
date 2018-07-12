@@ -1,0 +1,7 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+  <h1>Posts from {{ user.username }}</h1>
+
+  {% include 'posts_show.html.twig' with {posts: user.posts} %}
+{% endblock %}

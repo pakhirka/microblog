@@ -1,0 +1,125 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Posts list</h1>
+
+
+  {{ form_start(form) }}
+  {{ form_widget(form) }}
+  <div class="form-group">
+    <button type="submit" class="btn btn-primary" style="width:100%">{{ 'form.create' | trans }}</button>
+  </div>
+  {{ form_end(form) }}
+
+	
+
+    <table class="table table-stripped">
+        <thead>
+            <tr>
+                <th>User</th>
+                <th>Content</th>
+                <th>Create Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+		<tr id="insertAttr"></tr>
+        {% for post in posts %}
+            <tr>
+                <td>{{ post.user }}</td>
+                <td>{{ post.content }}</td>
+                <td>{% if post.createdAt %}{{ post.createdAt|date('Y-m-d H:i:s') }}{% endif %}</td>
+                <td>
+				{% if post.user|lower == app.user|lower %}
+                    <ul>
+						<li>							
+							<a href="{{ path('admin_posts_delete', { 'id': post.id }) }}">Delete</a>
+						</li>
+                    </ul>
+				{% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+	{{ knp_pagination_render(posts) }}
+{% endblock %}
+{% block javascripts %}
+    <script type="text/javascript">
+	function getpost(){
+	
+				console.log("GETPOST");
+					var obj = "";
+					ajaxRequest = $.ajax({
+						type: 'GET',
+						url: '{{ path('admin_posts_data') }}',
+						data: obj,
+						datatype: 'json',
+						success: function (json) {
+							console.log(json);		
+						}
+				});
+	
+	}
+	
+	$(document).ready(function() {
+		 console.log("Ready");
+						
+			$('form').submit(function(event) { 
+				$('#name + .throw_error').empty(); 
+				$('#success').empty();
+
+
+				var $form = $(this);
+				var serializedData = decodeURI($form.serialize());								
+				var data = serializedData.split("&");				
+				
+				var obj={};
+				for(var key in data)
+				{
+					console.log(data[key]);
+					obj[data[key].split("=")[0]] = data[key].split("=")[1];
+				}
+
+				//console.log(obj);
+							
+				var $inputs = $form.find("input, select, button, textarea");
+				$inputs.prop("disabled", true); 
+				 
+								
+				ajaxRequest = $.ajax({
+						type: 'POST',
+						url: '{{ path('admin_posts_new') }}',
+						data: obj,
+						datatype: 'json',
+						success: function (json) {
+							//console.log(json);
+							if(json != 401) {
+								var delpath ="<ul><li><a href="+json['delpath']+">Delete</a></li></ul>";
+								var newRowContent = "<tr><td>"+json['user']+"</td><td>"+json['content']+"</td><td>"+json['created_at']+"</td><td>"+delpath+"</td></tr>";
+								$("#insertAttr").after(newRowContent);
+							} 
+											
+						}
+				});
+				
+				ajaxRequest.done(function (response, textStatus, jqXHR){
+					  console.log("Submitted successfully");
+					  $inputs.prop("disabled", false); 
+
+				 });
+
+
+				 ajaxRequest.fail(function (){
+				   console.log("There is error while submit");
+				   $inputs.prop("disabled", false); 
+				 });
+
+				
+				event.preventDefault(); //Prevent the default submit
+			});
+			
+			//setTimeout('getpost()',4000);
+		});
+    </script>	
+{% endblock %}

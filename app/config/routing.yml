@@ -1,0 +1,17 @@
+logout:
+  path: /logout
+
+login_check:
+  path: /login_check
+
+register:
+  path: /register
+  defaults: { _controller: AppBundle:Registration:index }
+
+login:
+  path: /login
+  defaults: { _controller: AppBundle:Security:login }
+
+app:
+    resource: '@AppBundle/Controller/'
+    type: annotation
